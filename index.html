@@ -1,20 +1,23 @@
-extends base
+{% extends '_layout.swig' %}
+{% import '_macro/post.swig' as post_template %}
+{% import '_macro/sidebar.swig' as sidebar_template %}
 
-block nav
-    - var pageName = "HOME"
-    include _partial/menu
+{% block title %}{{ config.title }}{% if theme.index_with_subtitle and config.subtitle %} - {{config.subtitle }}{% endif %}{% endblock %}
 
-block header
-    - var pageHeader = __("site_index")
-    include _partial/body_header
+{% block page_class %}
+  {% if is_home() %}page-home{% endif -%}
+{% endblock %}
 
-block content
-    div.body__content
-        each post in page.posts.toArray()
-            a(href=url_for(post.path), title=post.title).body__item.post__title
-                span!= post.title
-                span(class="archive_date")!= date(post.date)
-    div.body__pagination
-        div.pull-right!= paginator()
-    div#disqus_thread
+{% block content %}
+  <section id="posts" class="posts-expand">
+    {% for post in page.posts %}
+      {{ post_template.render(post, true) }}
+    {% endfor %}
+  </section>
 
+  {% include '_partials/pagination.swig' %}
+{% endblock %}
+
+{% block sidebar %}
+  {{ sidebar_template.render(false) }}
+{% endblock %}
