@@ -100,7 +100,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/04/ButterKnife-8-4-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0/" data-id="ckz809owz000040v69k9a2p6t" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/04/ButterKnife-8-4-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0/" data-id="ckz8eeige0000asv6diwp37ks" class="article-share-link">Share</a>
       
       
     </footer>
@@ -149,11 +149,12 @@
 <h3 id="5-效果图片"><a href="#5-效果图片" class="headerlink" title="5.效果图片"></a>5.效果图片</h3><p><img src="BK%E6%95%88%E6%9E%9C%E5%9B%BE.png"></p>
 <p>可以看到我们绑定控件的效果实现了。</p>
 <p>我们的分析ButterKnife系列文章也就结束了。本文大量参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/ta893115871">顾修忠</a>的分析butterKnife的系列文章。感谢各位前人的努力。如果各位有兴趣和我一起探讨Android技术的话欢迎加我的微信 GCRAlice716。各位再见~。</p>
+<p>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/" data-id="ckz809ox7000240v6ehedewt3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/" data-id="ckz8eeigq0003asv6fpc6b3gb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -269,11 +270,12 @@
 
 <p>到此我们整个ButterKnife的@BindView处理流程的分析就算完了。</p>
 <p>接下来的最后一章节我们会自己实现一个简易版本的ButterKnife的@BindView方法。</p>
+<p>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89/" data-id="ckz809oxa000540v6100ccc1r" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89/" data-id="ckz8eeigs0004asv6dboyfxfw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -345,11 +347,12 @@
 
 <p>其实ButterKnife做的处理就是把所有被@BindView注解过的元素做一个规整，前面说的以enclosingElement为键的原因就是把在同一个类中的被@BindView注解过的元素放到一起，便于下一步直接遍历targetClassMap用javapoet生成一个有规律的java源文件。画个图阐述下我的意思。<br><img src="BK%E8%BD%AC%E6%8D%A2%E5%9B%BE.png"></p>
 <p>ok 这章节就结束了，接下来我们看下jake大神是如何将targetClassMap转换成java文件的。</p>
+<p>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89/" data-id="ckz809ox9000340v62gbd4t5k" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89/" data-id="ckz8eeigp0002asv600zx0wkb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -418,12 +421,12 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@BindView(R.id.tvTitle)</span></span><br><span class="line">TextView title;</span><br></pre></td></tr></table></figure>
 
 <p>这里获取到id值就是R.id.tvTitle。</p>
-<p>好了，，这一章节到此结束啦。接下来我们再看接下来的3,4,5三步。</p>
+<p>好了，，这一章节到此结束啦。接下来我们再看接下来的3,4,5三步。<br>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" data-id="ckz809ox9000440v69n1depo0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" data-id="ckz8eeigt0005asv6d7wx4xbh" class="article-share-link">Share</a>
       
       
     </footer>
@@ -495,11 +498,12 @@
 </ul>
 <p>到此为止，一个基本的注解处理器就写好了。</p>
 <p>下一章节我们再看看ButterKnife的内部实现吧。</p>
+<p>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/" data-id="ckz809ox5000140v6f2sr598b" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/" data-id="ckz8eeigl0001asv6gcp1g31u" class="article-share-link">Share</a>
       
       
     </footer>
