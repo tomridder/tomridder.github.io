@@ -1,37 +1,239 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
 
+  
+  <title>ButterKnife源码解析（五） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="ButterKnife 8.4.0 源码分析（五）自己实现ButterKnife的@BindView方法1.项目目录注意这里new Module时需要生成一个 java的module 而不是Android的module，否则某些特定方法会得不到。  2.java包 annotation部分首先我们来看 我们自定义的注解 @BindView部分 12345678910&#x2F;** * 定义修饰的元素为 变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ButterKnife源码解析（五）">
+<meta property="og:url" content="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="ButterKnife 8.4.0 源码分析（五）自己实现ButterKnife的@BindView方法1.项目目录注意这里new Module时需要生成一个 java的module 而不是Android的module，否则某些特定方法会得不到。  2.java包 annotation部分首先我们来看 我们自定义的注解 @BindView部分 12345678910&#x2F;** * 定义修饰的元素为 变">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/BK%E7%9B%AE%E5%BD%95%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/BK%E6%95%88%E6%9E%9C%E5%9B%BE.png">
+<meta property="article:published_time" content="2022-02-03T12:07:15.000Z">
+<meta property="article:modified_time" content="2022-02-04T12:42:25.876Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/BK%E7%9B%AE%E5%BD%95%E5%9B%BE.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+<meta name="generator" content="Hexo 5.4.1"></head>
 
-{% block page_class %}page-post-detail{% endblock %}
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ButterKnife源码解析（五）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/" class="article-date">
+  <time datetime="2022-02-03T12:07:15.000Z" itemprop="datePublished">2022-02-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ButterKnife源码解析（五）
+    </h1>
+  
 
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="ButterKnife-8-4-0-源码分析（五）"><a href="#ButterKnife-8-4-0-源码分析（五）" class="headerlink" title="ButterKnife 8.4.0 源码分析（五）"></a>ButterKnife 8.4.0 源码分析（五）</h1><h2 id="自己实现ButterKnife的-BindView方法"><a href="#自己实现ButterKnife的-BindView方法" class="headerlink" title="自己实现ButterKnife的@BindView方法"></a>自己实现ButterKnife的@BindView方法</h2><h3 id="1-项目目录"><a href="#1-项目目录" class="headerlink" title="1.项目目录"></a>1.项目目录</h3><p>注意这里new Module时需要生成一个 java的module 而不是Android的module，否则某些特定方法会得不到。</p>
+<p><img src="BK%E7%9B%AE%E5%BD%95%E5%9B%BE.png"></p>
+<h3 id="2-java包-annotation部分"><a href="#2-java包-annotation部分" class="headerlink" title="2.java包 annotation部分"></a>2.java包 annotation部分</h3><p>首先我们来看 我们自定义的注解 @BindView部分</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义修饰的元素为 变量</span></span><br><span class="line"><span class="comment"> * 定义保留到 编译期</span></span><br><span class="line"><span class="comment"> * 有一个整形的int类型的值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.CLASS)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> BindView &#123;</span><br><span class="line">     <span class="function"><span class="keyword">int</span> <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-{% block content %}
+<p>接下来是我们Butterknife对外提供的接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yunxiao.dev.annotation;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ButterKnife</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">bind</span><span class="params">(Object activity)</span> </span>&#123;</span><br><span class="line">        Class&lt;?&gt; aClass = activity.getClass();</span><br><span class="line">        <span class="comment">// getName() 带包名</span></span><br><span class="line">        String bindName = aClass.getName() + <span class="string">&quot;$$ViewBinder&quot;</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class&lt;?&gt; bindClazz =Class.forName(bindName);</span><br><span class="line">            <span class="comment">//首先获取到这个类有参数的构造方法</span></span><br><span class="line">            Constructor&lt;?&gt; constructor = bindClazz.getConstructor(activity.getClass());</span><br><span class="line">            <span class="comment">// 通过反射生成实例 调用构造方法</span></span><br><span class="line">            constructor.newInstance(activity);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+<h3 id="3-自定义处理器-AnnotationCompiler"><a href="#3-自定义处理器-AnnotationCompiler" class="headerlink" title="3.自定义处理器 AnnotationCompiler"></a>3.自定义处理器 AnnotationCompiler</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yunxiao.dev.annotaion_compiler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.auto.service.AutoService;</span><br><span class="line"><span class="keyword">import</span> com.yunxiao.dev.annotation.BindView;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.Writer;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.processing.AbstractProcessor;</span><br><span class="line"><span class="keyword">import</span> javax.annotation.processing.Filer;</span><br><span class="line"><span class="keyword">import</span> javax.annotation.processing.ProcessingEnvironment;</span><br><span class="line"><span class="keyword">import</span> javax.annotation.processing.Processor;</span><br><span class="line"><span class="keyword">import</span> javax.annotation.processing.RoundEnvironment;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.SourceVersion;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.element.Element;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.element.PackageElement;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.element.TypeElement;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.element.VariableElement;</span><br><span class="line"><span class="keyword">import</span> javax.lang.model.type.TypeMirror;</span><br><span class="line"><span class="keyword">import</span> javax.tools.JavaFileObject;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 目的：生成一个java文件 去生成执行窗体的findVIewById的事件代码</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * 注解处理器</span></span><br><span class="line"><span class="comment"> * 1.继承</span></span><br><span class="line"><span class="comment"> * 2。注册服务 注册注解处理器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@AutoService(Processor.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationCompiler</span> <span class="keyword">extends</span> <span class="title">AbstractProcessor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//生成文件的对象</span></span><br><span class="line">    Filer filer;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 声明支持的java版本</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SourceVersion <span class="title">getSupportedSourceVersion</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> processingEnv.getSourceVersion();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 声明要处理的注解是哪些</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;String&gt; <span class="title">getSupportedAnnotationTypes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Set&lt;String&gt; types = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        types.add(BindView.class.getName());</span><br><span class="line">        <span class="keyword">return</span> types;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(ProcessingEnvironment processingEnv)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.init(processingEnv);</span><br><span class="line">        filer = processingEnv.getFiler();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 核心方法 这个方法能够得到注解所标记的内容</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> set</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> roundEnvironment</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; set, RoundEnvironment roundEnvironment)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取到当前模块中所有用到了BindView的节点</span></span><br><span class="line">        Set&lt;? extends Element&gt; elementsAnnotatedWithBindView = roundEnvironment.getElementsAnnotatedWith(BindView.class);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//TypeElement 类节点</span></span><br><span class="line">        <span class="comment">//ExecutableElement 方法节点</span></span><br><span class="line">        <span class="comment">//VariableElement  成员变量节点</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//每个activity类中被标记的节点区分开来然后统一存储起来 键为activityName 值为activity中所有被标记的变量</span></span><br><span class="line">        Map&lt;String, List&lt;VariableElement&gt;&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Element element : elementsAnnotatedWithBindView) &#123;</span><br><span class="line">            <span class="comment">//转换一下 得到的是成员变量的节点</span></span><br><span class="line">            VariableElement variableElement = (VariableElement) element;</span><br><span class="line">            <span class="comment">// 获取类名</span></span><br><span class="line">            TypeElement typeElement = (TypeElement) variableElement.getEnclosingElement();</span><br><span class="line">            String activityName = typeElement.getSimpleName().toString();</span><br><span class="line">            <span class="comment">//@BindView注解过的元素做一个规整，以enclosingElement为键的原因就是把在同一个类中的被@BindView注解过的元素放到一起，</span></span><br><span class="line">            List&lt;VariableElement&gt; variableElements = map.get(activityName);</span><br><span class="line">            <span class="keyword">if</span> (variableElements == <span class="keyword">null</span>) &#123;</span><br><span class="line">                variableElements = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                map.put(activityName, variableElements);</span><br><span class="line">            &#125;</span><br><span class="line">            variableElements.add(variableElement);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//开始生成xxxActivity$$ViewBinder.java文件</span></span><br><span class="line">        <span class="keyword">if</span> (map.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">            Writer writer = <span class="keyword">null</span>;</span><br><span class="line">            <span class="comment">//得到map的key的迭代器</span></span><br><span class="line">            Iterator&lt;String&gt; iterator = map.keySet().iterator();</span><br><span class="line">            <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">                String activityName = iterator.next();</span><br><span class="line">                String newBinderName = activityName + <span class="string">&quot;$$ViewBinder&quot;</span>;</span><br><span class="line">                <span class="comment">// 得到value</span></span><br><span class="line">                List&lt;VariableElement&gt; variableElements = map.get(activityName);</span><br><span class="line">                String packageName = getPackageName(variableElements.get(<span class="number">0</span>));</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    JavaFileObject sourceFile = filer.createSourceFile(packageName + <span class="string">&quot;.&quot;</span> + activityName + <span class="string">&quot;$$ViewBinder&quot;</span>);</span><br><span class="line">                    writer = sourceFile.openWriter();</span><br><span class="line">                    StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">                    <span class="comment">// 导入包名</span></span><br><span class="line">                    stringBuffer.append(<span class="string">&quot;package &quot;</span> + packageName + <span class="string">&quot;;\n&quot;</span>);</span><br><span class="line">                    <span class="comment">// 导入依赖</span></span><br><span class="line">                    stringBuffer.append(<span class="string">&quot;import android.view.View;\n&quot;</span>);</span><br><span class="line">                    <span class="comment">// 类名</span></span><br><span class="line">                    stringBuffer.append(<span class="string">&quot;public class &quot;</span> + newBinderName + <span class="string">&quot;&#123;\n&quot;</span>);</span><br><span class="line">                    <span class="comment">// 构造函数</span></span><br><span class="line">                    stringBuffer.append(<span class="string">&quot;public &quot;</span> + newBinderName + <span class="string">&quot;(final &quot;</span> + packageName + <span class="string">&quot;.&quot;</span> + activityName + <span class="string">&quot; target)&#123;\n&quot;</span>);</span><br><span class="line">                    <span class="comment">//遍历value值</span></span><br><span class="line">                    <span class="keyword">for</span> (VariableElement element : variableElements) &#123;</span><br><span class="line">                        <span class="comment">//获取到成员变量的名字</span></span><br><span class="line">                        String fieldName = element.getSimpleName().toString();</span><br><span class="line">                        <span class="comment">//得到类型 强转的时候用</span></span><br><span class="line">                        TypeMirror typeMirror = element.asType();</span><br><span class="line">                        <span class="comment">//获取到注解中的id</span></span><br><span class="line">                        <span class="keyword">int</span> resId = element.getAnnotation(BindView.class).value();</span><br><span class="line">                        <span class="comment">// 生成 findViewById</span></span><br><span class="line">                        stringBuffer.append(<span class="string">&quot;target.&quot;</span> + fieldName + <span class="string">&quot; =(&quot;</span> + typeMirror + <span class="string">&quot;) target.findViewById(&quot;</span> + resId + <span class="string">&quot;);\n&quot;</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    stringBuffer.append(<span class="string">&quot;&#125;\n&#125;&quot;</span>);</span><br><span class="line">                    writer.write(stringBuffer.toString());</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (writer != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            writer.close();</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取包名的方法</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> variableElement</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPackageName</span><span class="params">(VariableElement variableElement)</span> </span>&#123;</span><br><span class="line">        TypeElement typeElement = (TypeElement) variableElement.getEnclosingElement();</span><br><span class="line">        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(typeElement);</span><br><span class="line">        <span class="keyword">return</span> packageElement.getQualifiedName().toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    <div class="post-spread">
-      {% if theme.jiathis %}
-        {% include '_partials/share/jiathis.swig' %}
-      {% elseif theme.baidushare %}
-        {% include '_partials/share/baidushare.swig' %}
-      {% elseif theme.add_this_id %}
-        {% include '_partials/share/add-this.swig' %}
-      {% elseif theme.duoshuo_shortname and theme.duoshuo_share %}
-        {% include '_partials/share/duoshuo_share.swig' %}
-      {% endif %}
+<h3 id="4-使用以及生成的TwoActivity-ViewBinder文件（全局搜索便可以得到）"><a href="#4-使用以及生成的TwoActivity-ViewBinder文件（全局搜索便可以得到）" class="headerlink" title="4.使用以及生成的TwoActivity$$ViewBinder文件（全局搜索便可以得到）"></a>4.使用以及生成的TwoActivity$$ViewBinder文件（全局搜索便可以得到）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yunxiao.dev.mybutterknife;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.widget.Button;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.yunxiao.dev.annotation.BindView;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TwoActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BindView(R.id.button_1)</span></span><br><span class="line">    Button button1;</span><br><span class="line">    <span class="meta">@BindView(R.id.button_2)</span></span><br><span class="line">    Button button2;</span><br><span class="line">    <span class="meta">@BindView(R.id.button_3)</span></span><br><span class="line">    Button button3;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_two);</span><br><span class="line">        button1.setText(<span class="string">&quot;We&quot;</span>);</span><br><span class="line">        button2.setText(<span class="string">&quot;Made&quot;</span>);</span><br><span class="line">        button3.setText(<span class="string">&quot;It&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yunxiao.dev.mybutterknife;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TwoActivity</span>$$<span class="title">ViewBinder</span></span>&#123;</span><br><span class="line"><span class="keyword">public</span> TwoActivity$$ViewBinder(<span class="keyword">final</span> com.yunxiao.dev.mybutterknife.TwoActivity target)&#123;</span><br><span class="line">target.button1 =(android.widget.Button) target.findViewById(<span class="number">2131230824</span>);</span><br><span class="line">target.button2 =(android.widget.Button) target.findViewById(<span class="number">2131230825</span>);</span><br><span class="line">target.button3 =(android.widget.Button) target.findViewById(<span class="number">2131230826</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-效果图片"><a href="#5-效果图片" class="headerlink" title="5.效果图片"></a>5.效果图片</h3><p><img src="BK%E6%95%88%E6%9E%9C%E5%9B%BE.png"></p>
+<p>可以看到我们绑定控件的效果实现了。</p>
+<p>我们的分析ButterKnife系列文章也就结束了。本文大量参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/ta893115871">顾修忠</a>的分析butterKnife的系列文章。感谢各位前人的努力。如果各位有兴趣和我一起探讨Android技术的话欢迎加我的微信 GCRAlice716。各位再见~。</p>
+<p>如果大家觉得这篇源码分析系列文章写得还好的话 给个star也行呗~~  <a target="_blank" rel="noopener" href="https://github.com/tomridder/ButterKnife-8.4.0-">github地址传送门</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/" data-id="ckz8hfzwm0004p4v65rsn8dcj" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/02/04/ButterKnife-8-4-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          ButterKnife 8.4.0 源码解析系列文章
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ButterKnife源码解析（四）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">February 2022</a></li></ul>
     </div>
   </div>
 
-{% endblock %}
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/02/04/ButterKnife-8-4-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0/">ButterKnife 8.4.0 源码解析系列文章</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89/">ButterKnife源码解析（五）</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89/">ButterKnife源码解析（四）</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89/">ButterKnife源码解析（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/03/ButterKnife%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/">ButterKnife源码解析（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2022 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
